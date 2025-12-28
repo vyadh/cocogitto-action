@@ -34,11 +34,18 @@ case $PLATFORM in
 esac
 
 TAR="cocogitto-$VERSION-$ARCH-$PLATFORM.tar.gz"
-echo "Downloading cocogitto version $VERSION for $ARCH-$PLATFORM from https://github.com/cocogitto/cocogitto/releases/download/$VERSION/$TAR"
+URL="https://github.com/cocogitto/cocogitto/releases/download/$VERSION/$TAR"
+echo "Downloading cocogitto version $VERSION for $ARCH-$PLATFORM from $URL"
 
 mkdir -p "$BIN_DIR"
 cd "$BIN_DIR" || exit
-curl -OL https://github.com/cocogitto/cocogitto/releases/download/"$VERSION"/"$TAR"
+
+if [ -n "$GITHUB_TOKEN" ]; then
+  curl -H "Authorization: token $GITHUB_TOKEN" -OL "$URL"
+else
+  curl -OL "$URL"
+fi
+
 if [ "$PLATFORM" = "pc-windows-msvc" ]; then
     tar --strip-components=1 -xzf $TAR "$ARCH-$PLATFORM/cog.exe"
 else
